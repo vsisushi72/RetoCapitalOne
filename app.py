@@ -8,6 +8,10 @@ from nessie_client import obtener_saldo_cuenta, obtener_historial_transacciones
 MODO_DEMO_JUECES = True
 RUTA_LOGO = "assets/capital_one_logo.jpeg"
 
+TARJETA_DEMO_NOMBRE = "Roberto Gomez"
+TARJETA_DEMO_NUMERO = "4539 1488 0343 6467"
+TARJETA_DEMO_NIP = "4321"
+
 TIPS_SEGURIDAD = [
     "Nunca compartas tu NIP o contraseña, ni con el banco ni con nadie por telefono.",
     "Si alguien te presiona para transferir dinero con urgencia, cuelga y verifica con un familiar.",
@@ -51,8 +55,28 @@ if st.session_state["pantalla"] == "splash":
             </p>
         """, unsafe_allow_html=True)
     time.sleep(2.5)
-    st.session_state["pantalla"] = "seleccion"
+    st.session_state["pantalla"] = "login"
     st.rerun()
+
+if st.session_state["pantalla"] == "login":
+    st.write("### Ingresa a tu cuenta")
+    st.write("(Pantalla provisional, el diseno final se agrega despues)")
+
+    col_izq, col_centro, col_der = st.columns([1, 2, 1])
+    with col_centro:
+        numero_ingresado = st.text_input("Numero de tarjeta (16 digitos)", max_chars=19, placeholder="0000 0000 0000 0000")
+        nip_ingresado = st.text_input("NIP", max_chars=4, type="password", placeholder="****")
+
+        if st.button("Ingresar"):
+            numero_limpio = "".join(ch for ch in numero_ingresado if ch.isdigit())
+            tarjeta_limpia = "".join(ch for ch in TARJETA_DEMO_NUMERO if ch.isdigit())
+
+            if numero_limpio == tarjeta_limpia and nip_ingresado == TARJETA_DEMO_NIP:
+                st.session_state["pantalla"] = "seleccion"
+                st.rerun()
+            else:
+                st.error("Numero de tarjeta o NIP incorrectos. Intenta de nuevo.")
+    st.stop()
 
 if st.session_state["pantalla"] == "seleccion":
     st.write("### Elige como quieres usar la aplicacion")
