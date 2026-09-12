@@ -4,6 +4,11 @@ from nessie_client import obtener_saldo_cuenta, obtener_historial_transacciones
 
 MODO_DEMO_JUECES = True
 
+if "fraudes_bloqueados" not in st.session_state:
+    st.session_state["fraudes_bloqueados"] = 12 if MODO_DEMO_JUECES else 0
+if "dinero_protegido" not in st.session_state:
+    st.session_state["dinero_protegido"] = 45230.0 if MODO_DEMO_JUECES else 0.0
+
 st.set_page_config(page_title="Guardian Financiero Senior", layout="wide")
 
 st.markdown("""
@@ -144,6 +149,28 @@ st.markdown("""
         font-weight: bold !important;
     }
 
+    .metric-box {
+        background-color: #FFFFFF !important;
+        border: 2px solid #E2E8F0 !important;
+        border-radius: 16px !important;
+        padding: 20px !important;
+        text-align: center !important;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03) !important;
+    }
+    .metric-box span {
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        color: #475569 !important;
+    }
+    .metric-box h2 {
+        font-size: 30px !important;
+        margin: 6px 0 0 0 !important;
+        font-weight: 800 !important;
+    }
+    .metric-saldo h2 { color: #4338CA !important; }
+    .metric-bloqueos h2 { color: #DC2626 !important; }
+    .metric-protegido h2 { color: #047857 !important; }
+
     div[data-testid="stExpander"] {
         background-color: #FFFFFF !important;
         border: 2px solid #E2E8F0 !important;
@@ -175,6 +202,35 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
+saldo_dashboard = obtener_saldo_cuenta("CUENTA_ROBERTO_123")
+col_m1, col_m2, col_m3 = st.columns(3)
+
+with col_m1:
+    st.markdown(f"""
+        <div class="metric-box metric-saldo">
+            <span>Saldo disponible</span>
+            <h2>${saldo_dashboard:,.2f}</h2>
+        </div>
+    """, unsafe_allow_html=True)
+
+with col_m2:
+    st.markdown(f"""
+        <div class="metric-box metric-bloqueos">
+            <span>Intentos de fraude bloqueados este mes</span>
+            <h2>{st.session_state['fraudes_bloqueados']}</h2>
+        </div>
+    """, unsafe_allow_html=True)
+
+with col_m3:
+    st.markdown(f"""
+        <div class="metric-box metric-protegido">
+            <span>Dinero total protegido</span>
+            <h2>${st.session_state['dinero_protegido']:,.2f}</h2>
+        </div>
+    """, unsafe_allow_html=True)
+
+st.write("")
+
 tab_operacion, tab_bitacora, tab_reglas = st.tabs([
     "Realizar Transferencia",
     "Bitacora de Actividad",
@@ -185,11 +241,10 @@ with tab_operacion:
     col_left, col_right = st.columns([2, 1])
 
     with col_left:
-        saldo = obtener_saldo_cuenta("CUENTA_ROBERTO_123")
         st.markdown(f"""
             <div class="balance-box">
                 <span>Saldo disponible en cuenta corriente:</span>
-                <h2>${saldo:,.2f} MXN</h2>
+                <h2>${saldo_dashboard:,.2f} MXN</h2>
             </div>
         """, unsafe_allow_html=True)
 
@@ -211,6 +266,9 @@ with tab_operacion:
                     </div>
                 """, unsafe_allow_html=True)
             else:
+                st.session_state["fraudes_bloqueados"] += 1
+                st.session_state["dinero_protegido"] += monto
+
                 st.markdown("""
                     <div class="alert-danger">
                         <h3>Operacion detenida por seguridad</h3>
