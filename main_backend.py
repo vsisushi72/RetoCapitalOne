@@ -13,7 +13,7 @@ def procesar_transaccion_segura(account_id_origen: str, account_id_destino: str,
     historial = obtener_historial_transacciones(account_id_origen)
 
     # 2. Analizar riesgos con el motor de seguridad
-    evaluacion_riesgo = evaluar_riesgo_transaccion(monto, concepto, historial)
+    evaluacion_riesgo = evaluar_riesgo_transaccion(monto, concepto, historial, account_id_destino)
 
     # 3. Decidir si se procesa o se bloquea
     if evaluacion_riesgo["aprobado_automatico"] or autorizacion_familiar:

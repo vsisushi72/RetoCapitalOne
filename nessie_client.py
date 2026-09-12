@@ -1,7 +1,7 @@
+import os
 import requests
 
-# API Key formateada correctamente con comillas
-API_KEY = "f75ef80337c95ec3aa22516cb6cb3dc3"
+API_KEY = os.environ.get("NESSIE_API_KEY", "")
 BASE_URL = "http://api.nessieisreal.com"
 
 def obtener_saldo_cuenta(account_id: str) -> float:
@@ -29,8 +29,8 @@ def obtener_historial_transacciones(account_id: str) -> list:
     
     # Historial de respaldo para la demo
     return [
-        {"amount": 200.0, "description": "Pago de luz"},
-        {"amount": 150.0, "description": "Supermercado"}
+        {"amount": 200.0, "description": "Pago de luz", "payee_id": "987654321"},
+        {"amount": 150.0, "description": "Supermercado", "payee_id": "111222333"}
     ]
 
 def ejecutar_transferencia(account_id_origen: str, account_id_destino: str, monto: float, concepto: str) -> dict:

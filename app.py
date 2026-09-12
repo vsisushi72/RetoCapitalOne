@@ -2,6 +2,8 @@ import streamlit as st
 from main_backend import procesar_transaccion_segura
 from nessie_client import obtener_saldo_cuenta, obtener_historial_transacciones
 
+MODO_DEMO_JUECES = True
+
 st.set_page_config(page_title="Guardian Financiero Senior", layout="wide")
 
 st.markdown("""
@@ -157,14 +159,12 @@ st.markdown("""
 with st.sidebar:
     st.markdown("""
         <div class="card-panel">
-            <h3 style="margin:0 0 10px 0;">Perfil del Usuario</h3>
-            <p><b>Titular:</b> Roberto Gómez</p>
+            <h3 style="margin:0 0 10px 0;">Mi Cuenta</h3>
+            <p><b>Nombre:</b> Roberto Gómez</p>
             <p><b>Edad:</b> 68 años</p>
-            <p><b>Cuenta:</b> Preferente Senior</p>
-            <p><b>Estado:</b> Protegido</p>
+            <p><b>Tipo de cuenta:</b> Cuenta Senior</p>
             <hr>
-            <p><b>Autonomia:</b> Habilitada</p>
-            <p><b>Conexion Nessie:</b> Activa</p>
+            <p>✅ Tu cuenta está siendo protegida en tiempo real</p>
         </div>
     """, unsafe_allow_html=True)
 
@@ -230,30 +230,37 @@ with tab_operacion:
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col_right:
-        st.markdown("""
-            <div class="card-panel">
-                <h3>Simulador para Evaluacion</h3>
-                <p>Cargue escenarios rapidos para presentar ante los jueces de Capital One:</p>
-            </div>
-        """, unsafe_allow_html=True)
+        if MODO_DEMO_JUECES:
+            st.markdown("""
+                <div class="card-panel">
+                    <h3>Simulador para Evaluacion</h3>
+                    <p>Cargue escenarios rapidos para presentar ante los jueces de Capital One:</p>
+                </div>
+            """, unsafe_allow_html=True)
 
-        if st.button("Probar Transaccion Segura"):
-            st.session_state["cuenta_test"] = "987654321"
-            st.session_state["monto_test"] = 200.0
-            st.session_state["concepto_test"] = "Compra de medicamentos"
-            st.rerun()
+            if st.button("Probar Transaccion Segura"):
+                st.session_state["cuenta_test"] = "987654321"
+                st.session_state["monto_test"] = 200.0
+                st.session_state["concepto_test"] = "Compra de medicamentos"
+                st.rerun()
 
-        if st.button("Simular Riesgo: Monto Alto"):
-            st.session_state["cuenta_test"] = "987654321"
-            st.session_state["monto_test"] = 9500.0
-            st.session_state["concepto_test"] = "Transferencia urgente"
-            st.rerun()
+            if st.button("Simular Riesgo: Monto Alto"):
+                st.session_state["cuenta_test"] = "987654321"
+                st.session_state["monto_test"] = 9500.0
+                st.session_state["concepto_test"] = "Transferencia urgente"
+                st.rerun()
 
-        if st.button("Simular Riesgo: Fuga de NIP"):
-            st.session_state["cuenta_test"] = "987654321"
-            st.session_state["monto_test"] = 400.0
-            st.session_state["concepto_test"] = "Pago con mi NIP 4321"
-            st.rerun()
+            if st.button("Simular Riesgo: Fuga de NIP"):
+                st.session_state["cuenta_test"] = "987654321"
+                st.session_state["monto_test"] = 400.0
+                st.session_state["concepto_test"] = "Pago con mi NIP 4321"
+                st.rerun()
+
+            if st.button("Simular Riesgo: Destinatario Nuevo"):
+                st.session_state["cuenta_test"] = "555000111"
+                st.session_state["monto_test"] = 1500.0
+                st.session_state["concepto_test"] = "Ayuda urgente a un conocido"
+                st.rerun()
 
 with tab_bitacora:
     st.markdown('<div class="card-panel">', unsafe_allow_html=True)
