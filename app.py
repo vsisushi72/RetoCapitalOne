@@ -27,18 +27,18 @@ if "fraudes_bloqueados" not in st.session_state:
     st.session_state["fraudes_bloqueados"] = 12 if MODO_DEMO_JUECES else 0
 if "dinero_protegido" not in st.session_state:
     st.session_state["dinero_protegido"] = 45230.0 if MODO_DEMO_JUECES else 0.0
-if "texto_grande" not in st.session_state:
-    st.session_state["texto_grande"] = False
+if "nivel_fuente" not in st.session_state:
+    st.session_state["nivel_fuente"] = "normal"
 if "mensaje_ana" not in st.session_state:
     st.session_state["mensaje_ana"] = f"{obtener_saludo()}, Roberto. {random.choice(TIPS_SEGURIDAD)}"
 if "titulo_ana" not in st.session_state:
     st.session_state["titulo_ana"] = "Ana, tu asesora de seguridad"
-if "app_iniciada" not in st.session_state:
-    st.session_state["app_iniciada"] = False
+if "pantalla" not in st.session_state:
+    st.session_state["pantalla"] = "splash"
 
 st.set_page_config(page_title="Guardian Financiero Senior", layout="wide")
 
-if not st.session_state["app_iniciada"]:
+if st.session_state["pantalla"] == "splash":
     col_izq, col_centro, col_der = st.columns([1, 2, 1])
     with col_centro:
         st.write("")
@@ -51,8 +51,43 @@ if not st.session_state["app_iniciada"]:
             </p>
         """, unsafe_allow_html=True)
     time.sleep(2.5)
-    st.session_state["app_iniciada"] = True
+    st.session_state["pantalla"] = "seleccion"
     st.rerun()
+
+if st.session_state["pantalla"] == "seleccion":
+    st.write("### Elige como quieres usar la aplicacion")
+    st.write("(Botones provisionales, el diseno final se agrega despues)")
+
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.link_button("Interfaz Clasica", "https://www.capitalone.com")
+    with col_b:
+        if st.button("Interfaz Facil"):
+            st.session_state["pantalla"] = "tamano_fuente"
+            st.rerun()
+    st.stop()
+
+if st.session_state["pantalla"] == "tamano_fuente":
+    st.write("### Elige el tamano de letra con el que quieres ver la app")
+    st.write("(Botones provisionales, el diseno final se agrega despues)")
+
+    col_a, col_b, col_c = st.columns(3)
+    with col_a:
+        if st.button("Texto Normal"):
+            st.session_state["nivel_fuente"] = "normal"
+            st.session_state["pantalla"] = "app"
+            st.rerun()
+    with col_b:
+        if st.button("Texto Grande"):
+            st.session_state["nivel_fuente"] = "grande"
+            st.session_state["pantalla"] = "app"
+            st.rerun()
+    with col_c:
+        if st.button("Texto Muy Grande"):
+            st.session_state["nivel_fuente"] = "muy_grande"
+            st.session_state["pantalla"] = "app"
+            st.rerun()
+    st.stop()
 
 st.markdown("""
     <style>
@@ -286,33 +321,38 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-if st.session_state["texto_grande"]:
-    st.markdown("""
+if st.session_state["nivel_fuente"] in ("grande", "muy_grande"):
+    if st.session_state["nivel_fuente"] == "grande":
+        tam_base, tam_h1, tam_h2, tam_h3, tam_boton, tam_input = "20px", "40px", "34px", "26px", "22px", "22px"
+    else:
+        tam_base, tam_h1, tam_h2, tam_h3, tam_boton, tam_input = "26px", "48px", "40px", "32px", "28px", "28px"
+
+    st.markdown(f"""
         <style>
-        html, body, .stApp, p, span, label, li, div {
-            font-size: 20px !important;
-        }
-        h1 { font-size: 40px !important; }
-        h2 { font-size: 34px !important; }
-        h3 { font-size: 26px !important; }
-        .stButton button {
-            font-size: 22px !important;
+        html, body, .stApp, p, span, label, li, div {{
+            font-size: {tam_base} !important;
+        }}
+        h1 {{ font-size: {tam_h1} !important; }}
+        h2 {{ font-size: {tam_h2} !important; }}
+        h3 {{ font-size: {tam_h3} !important; }}
+        .stButton button {{
+            font-size: {tam_boton} !important;
             padding: 16px 24px !important;
-        }
-        .stTextInput input, .stNumberInput input {
-            font-size: 22px !important;
+        }}
+        .stTextInput input, .stNumberInput input {{
+            font-size: {tam_input} !important;
             padding: 14px !important;
-        }
-        html, body, .stApp {
+        }}
+        html, body, .stApp {{
             background-color: #FFFFFF !important;
             color: #000000 !important;
-        }
-        p, span, label, h1, h2, h3, h4, h5, h6, div {
+        }}
+        p, span, label, h1, h2, h3, h4, h5, h6, div {{
             color: #000000 !important;
-        }
-        .card-panel, .metric-box, .assistant-box, .ana-anchor {
+        }}
+        .card-panel, .metric-box, .assistant-box, .ana-anchor {{
             border-width: 3px !important;
-        }
+        }}
         </style>
     """, unsafe_allow_html=True)
 
@@ -328,9 +368,12 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
-    st.session_state["texto_grande"] = st.checkbox(
-        "Texto grande y alto contraste",
-        value=st.session_state["texto_grande"]
+    opciones_fuente = {"normal": "Normal", "grande": "Grande", "muy_grande": "Muy Grande"}
+    st.session_state["nivel_fuente"] = st.radio(
+        "Tamano de letra",
+        options=list(opciones_fuente.keys()),
+        format_func=lambda k: opciones_fuente[k],
+        index=list(opciones_fuente.keys()).index(st.session_state["nivel_fuente"])
     )
 
 st.markdown("""
