@@ -1,10 +1,12 @@
 import streamlit as st
 import random
+import time
 from datetime import datetime
 from main_backend import procesar_transaccion_segura
 from nessie_client import obtener_saldo_cuenta, obtener_historial_transacciones
 
 MODO_DEMO_JUECES = True
+RUTA_LOGO = "assets/capital_one_logo.jpeg"
 
 TIPS_SEGURIDAD = [
     "Nunca compartas tu NIP o contraseña, ni con el banco ni con nadie por telefono.",
@@ -31,8 +33,26 @@ if "mensaje_ana" not in st.session_state:
     st.session_state["mensaje_ana"] = f"{obtener_saludo()}, Roberto. {random.choice(TIPS_SEGURIDAD)}"
 if "titulo_ana" not in st.session_state:
     st.session_state["titulo_ana"] = "Ana, tu asesora de seguridad"
+if "app_iniciada" not in st.session_state:
+    st.session_state["app_iniciada"] = False
 
 st.set_page_config(page_title="Guardian Financiero Senior", layout="wide")
+
+if not st.session_state["app_iniciada"]:
+    col_izq, col_centro, col_der = st.columns([1, 2, 1])
+    with col_centro:
+        st.write("")
+        st.write("")
+        st.write("")
+        st.image(RUTA_LOGO, use_container_width=True)
+        st.markdown("""
+            <p style="text-align:center; font-size:18px; color:#475569; margin-top:16px;">
+                Cargando Guardian Financiero Senior...
+            </p>
+        """, unsafe_allow_html=True)
+    time.sleep(2.5)
+    st.session_state["app_iniciada"] = True
+    st.rerun()
 
 st.markdown("""
     <style>
